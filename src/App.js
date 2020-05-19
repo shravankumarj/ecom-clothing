@@ -11,12 +11,14 @@ import SignInAngSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up
 import CheckoutPage from './pages/checkout/checkout.component'
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import { setCurrentUser } from './redux/user/user.actions'
-import { selecCurrentUser, selectCurrentUser } from './redux/user/user.selectors'
+import { selectCurrentUser } from './redux/user/user.selectors'
+import { selectCollectionsForPreview, selectCollection } from './redux/shop/shop.selectors'
 
 class App extends React.Component {
 
   unsubscribeFromAuth = null
   componentDidMount() {
+    const { selectCurrentUser } = this.props
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
@@ -31,8 +33,8 @@ class App extends React.Component {
 
       }
 
-      this.props.setCurrentUser(userAuth);
-    });
+      setCurrentUser(userAuth);
+    })
   }
 
 
@@ -53,13 +55,14 @@ class App extends React.Component {
               this.props.currentUser ? (<Redirect to='/' />) : <SignInAngSignUpPage />
             } />
         </Switch>
-      </div>
+      </div >
     )
   }
 
 }
 const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser
+  currentUser: selectCurrentUser,
+  collectionsArray: selectCollectionsForPreview
 })
 const mapDispatchToProps = dispatch => ({
   setCurrentUser: user => dispatch(setCurrentUser(user))
